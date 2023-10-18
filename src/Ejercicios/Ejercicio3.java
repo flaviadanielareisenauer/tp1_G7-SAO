@@ -101,10 +101,10 @@ package Ejercicios;
 import java.util.Scanner;
 
 public class Ejercicio3 {
+  
   public static void main (String[] args){
     Scanner entrada = new Scanner(System.in);
     
-    // Declaracion de las variables 
     int N;
     int cuotas;
     double precio;
@@ -114,12 +114,15 @@ public class Ejercicio3 {
     char metodo;
     double precioFinal; 
     double descuento = 0;
+    int montoModo = 2000;
     
-    // Declaracion de constantes
     final char malaOnda = 'M';
     final char carteraPremium = 'P';
     final char metodoModo = 'M';
+    final int montoParaTopePremium = 15000;
+    final int montoParaTopeGeneral = 16000;
     
+    // Pedimos el nro de compras a realizar
     N = entrada.nextInt();
     
     for (int i = 0; i < N; i++) {
@@ -129,20 +132,20 @@ public class Ejercicio3 {
       metodo = entrada.next().charAt(0);
       cuotas = entrada.nextInt();
       
-      if (cuotas > 1) { 
-        if (metodo == metodoModo) { 
-          if (precio >= 10000) {  
-            descuento += 2000; 
-          } else {
-            descuento += (precio * 0.2); 
-          }
+      if (metodo == metodoModo) { // Aplica MODO o no
+        if (precio >= 10000) { // == precio * 0.2 > 2000 (que es el tope de MODO) 
+          descuento += montoModo; // Sumo el tope de 2000
+          montoModo -= 2000; // Dejo el monto disponible de MODO en 0
+        } else {
+          descuento += Math.max(montoModo - (precio * 0.2), 0); // Saco el 20% de la compra y se lo resto a lo que haya disponible de MODO, si es menor a 0, dejo el valor del descuento en 0
+          montoModo -= Math.max(montoModo - (precio * 0.2), 0);
         }
-      } 
+      }
       
       if (onda == malaOnda) {
         if (cartera == carteraPremium) {
-          if (precio >= 15000) {  
-            descuento = descuento + 6000; 
+          if (precio >= montoParaTopePremium) { // 15000 es el monto mínimo para obtener descuento tope 
+            descuento = descuento + 6000; // 6000 es el tope de descuento
             precioFinal = precio - descuento;
             System.out.println(String.format("%.2f", descuento));
             System.out.println(String.format("%.2f", precioFinal));
@@ -152,9 +155,9 @@ public class Ejercicio3 {
             System.out.println(String.format("%.2f", descuento));
             System.out.println(String.format("%.2f", precioFinal));
           }
-        } else { 
-          if (precio >= 16000) { 
-            descuento = descuento + 4000; 
+        } else { // General (G) y Mala Onda (M)
+          if (precio >= montoParaTopeGeneral) { // 16000 es el monto mínimo para obtener descuento tope
+            descuento = descuento + 4000; // 4000 es el tope de descuento
             precioFinal = precio - descuento;
             System.out.println(String.format("%.2f", descuento));
             System.out.println(String.format("%.2f", precioFinal));
@@ -165,11 +168,11 @@ public class Ejercicio3 {
             System.out.println(String.format("%.2f", precioFinal));
           }
         }
-      } else { 
-        if (cartera == carteraPremium) { 
-          if (precio > 15000) {
-            transacciones = (int) (precio / 15000) + 1;
-            descuento = descuento + (precio * 0.4);
+      } else { // Buena Onda (B)
+        if (cartera == carteraPremium) { // Premium (P) y Buena Onda (B)
+          if (precio > montoParaTopePremium) {
+            transacciones = (int) (precio / montoParaTopePremium) + 1;
+            descuento += (precio * 0.4);
             precioFinal = precio - descuento;
             System.out.println(transacciones);
             System.out.println(String.format("%.2f", descuento));
@@ -182,9 +185,9 @@ public class Ejercicio3 {
             System.out.println(String.format("%.2f", descuento));
             System.out.println(String.format("%.2f", precioFinal));
           }
-        } else { 
-          if (precio > 16000) {
-            transacciones = (int) (precio / 16000) + 1 + cuotas;
+        } else { // General (G) y Buena Onda (B)
+          if (precio > montoParaTopeGeneral) {
+            transacciones = (int) (precio / montoParaTopeGeneral) + 1;
             descuento = descuento + (25 * precio) / 100;
             precioFinal = precio - descuento;
             System.out.println(transacciones);
@@ -199,9 +202,8 @@ public class Ejercicio3 {
             System.out.println(String.format("%.2f", precioFinal));
           }
         }
-      } 
-      
-      descuento = 0; 
+      }       
+      descuento = 0; // El descuento debe volver a cero para calcularse en la siguiente iteración del loop
     }
   }
 }
